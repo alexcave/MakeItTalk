@@ -383,7 +383,7 @@ class Image_translation_block():
             fls[:, 0::3] += 130
             fls[:, 1::3] += 80
 
-        writer = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256 * 3, 256))
+        writer = cv2.VideoWriter('out0.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256 * 3, 256))
 
         for i, frame in enumerate(fls):
 
@@ -422,6 +422,25 @@ class Image_translation_block():
                 writer.write(frame.astype(np.uint8))
 
         writer.release()
+ 
+        #crop video
+        top, right, bottom, left = 0, 512, 256, 256  # Sample values.
+        input_video = cv2.VideoCapture('out0.mp4')
+        output_movie = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256, 256))
+
+        while True:
+            ret, frame = input_video.read()
+            if not ret:
+                break
+            crop_img = frame[top:bottom, left:right]
+            output_movie.write(crop_img)
+
+        # Closes the video writer.
+        output_movie.release()    
+        os.remove('out0.mp4')
+ 
+ 
+ 
         print('Time - only video:', time.time() - st)
 
         if(filename is None):
